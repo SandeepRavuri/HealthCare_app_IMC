@@ -1,6 +1,7 @@
 package com.example.testproj3;
 
         import android.app.DatePickerDialog;
+        import android.content.Intent;
         import android.os.Bundle;
         import android.text.TextUtils;
         import android.view.View;
@@ -130,17 +131,52 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        // Initializing the firstbase object
-    }
+        doctorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String fullName = doctorFullName.getText().toString().trim();
+                final String Code = doctorCode.getText().toString().trim();
+                final String phoneNumber = doctorPhoneNumber.getText().toString().trim();
+                final String Email = doctorEmail.getText().toString().trim();
+                final String City = doctorCity.getText().toString().trim();
+                final String Address = doctorAddress.getText().toString().trim();
+                final String Speciality = doctorSpeciality.getText().toString().trim();
+                String password1 = doctorPassword1.getText().toString().trim();
+                String password2 = doctorPassword2.getText().toString().trim();
+                if(
+                        TextUtils.isEmpty(fullName)
+                                || TextUtils.isEmpty(Code)
+                                || TextUtils.isEmpty(phoneNumber)
+                                || TextUtils.isEmpty(Email)
+                                || TextUtils.isEmpty(City)
+                                || TextUtils.isEmpty(Address)
+                                || TextUtils.isEmpty(Speciality)
+                                || TextUtils.isEmpty(password1)
+                                || TextUtils.isEmpty(password2)
+                )
+                {
+                    Toast.makeText(RegisterActivity.this, "All fields are required !", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    if (!isEmailValid(Email)) {
+                        patientEmail.setError("Invalid email format !");
+                        return;
+                    }
+                    if (!password1.equals(password2)) {
+                        patientPassword1.setError("The two passwords are not matched");
+                        return;
+                    } else {
+                        if (password1.length() <= 3) {
+                            patientPassword1.setError("Password must be longer than three characters");
+                            return;
+                        }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        if(fbAuth.getCurrentUser() != null)
-//        {
-//            //handle the already connected user
-//        }
-//    }
+                    }
+                }
+                registerDoctor(fullName,Code, phoneNumber, Email, City, Address, Speciality, password1);
+            }
+        });
+    }
 
     public void patientRegistration(View view) {
         if(patientRadioButton.isChecked())
@@ -175,13 +211,10 @@ public class RegisterActivity extends AppCompatActivity {
                         referencePatient.child(firebaseUser.getUid()).setValue(patientDetails).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-
                                 if(task.isSuccessful()){
                                     // Send Verification Email
                                     firebaseUser.sendEmailVerification();
-
                                     Toast.makeText(RegisterActivity.this, "User registered successfully. Please verify your email", Toast.LENGTH_SHORT).show();
-
                                 }else{
                                     Toast.makeText(RegisterActivity.this, "User registration failed", Toast.LENGTH_SHORT).show();
                                 }
@@ -190,93 +223,35 @@ public class RegisterActivity extends AppCompatActivity {
                     }
             }
         });
-
-
-
-
     }
 
-    private void registerDoctor() {
-
-        final String fullName = doctorFullName.getText().toString().trim();
-        final String Code = doctorCode.getText().toString().trim();
-        final String phoneNumber = doctorPhoneNumber.getText().toString().trim();
-        final String Email = doctorEmail.getText().toString().trim();
-        final String City = doctorCity.getText().toString().trim();
-        final String Address = doctorAddress.getText().toString().trim();
-        final String Speciality = doctorSpeciality.getText().toString().trim();
-        String password1 = doctorPassword1.getText().toString().trim();
-        String password2 = doctorPassword2.getText().toString().trim();
-        if(
-                TextUtils.isEmpty(fullName)
-                        || TextUtils.isEmpty(Code)
-                        || TextUtils.isEmpty(phoneNumber)
-                        || TextUtils.isEmpty(Email)
-                        || TextUtils.isEmpty(City)
-                        || TextUtils.isEmpty(Address)
-                        || TextUtils.isEmpty(Speciality)
-                        || TextUtils.isEmpty(password1)
-                        || TextUtils.isEmpty(password2)
-        )
-        {
-            Toast.makeText(RegisterActivity.this, "All fields are required !", Toast.LENGTH_LONG).show();
-        }
-        else
-        {
-            if(!isEmailValid(Email)) {
-                patientEmail.setError("Invalid email format !");
-                return;
-            }
-            if(!password1.equals(password2))
-            {
-                patientPassword1.setError("The two passwords are not matched");
-                return;
-            }
-            else
-            {
-                if(password1.length()<=3) {
-                    patientPassword1.setError("Password must be longer than three characters");
-                    return;
-                }
-
-            }
+    private void registerDoctor(String fullName, String Code, String phoneNumber, String Email, String City, String Address, String Speciality, String password1) {
+            FirebaseAuth fbAuth = FirebaseAuth.getInstance();
             fbAuth.createUserWithEmailAndPassword(Email,password1).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
+                        FirebaseUser firebaseUser = fbAuth.getCurrentUser();
                         Doctor doctor = new Doctor(fullName, Code, phoneNumber, Email, City, Address, Speciality);
-                        FirebaseDatabase.getInstance().getReference("Doctors")
-                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                .setValue(doctor).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()) {
-                                            Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_LONG).show();
-                                        }
-                                        else {
-                                            Toast.makeText(RegisterActivity.this, "Registration failed", Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-                                });
-                    }
-                    else {
-                        Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        //Extracting user preference from Database for "Registered Patients"
+                        DatabaseReference referenceDoctor = FirebaseDatabase.getInstance().getReference("Registered Doctors");
+
+                        referenceDoctor.child(firebaseUser.getUid()).setValue(doctor).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    firebaseUser.sendEmailVerification();
+                                    Toast.makeText(RegisterActivity.this, "User registered Successfully", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                }else{
+                                    Toast.makeText(RegisterActivity.this, "User registration failed", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     }
                 }
             });
-
-        }
-
     }
-//    public void signUpPatient(View view) {
-//        registerPatient();
-//    }
-
-    public void signUpDoctor(View view) {
-        registerDoctor();
-    }
-
-
 
     public static boolean isEmailValid(String email) {
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";

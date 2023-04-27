@@ -1,13 +1,7 @@
 package com.example.testproj3;
 
 public class Doctor {
-    private String fullName;
-    private String code;
-    private String phoneNumber;
-    private String email;
-    private String city;
-    private String address;
-    private String speciality;
+    public String fullName,  code, phoneNumber, email, city, address,speciality;
 
     public Doctor() {
     }
