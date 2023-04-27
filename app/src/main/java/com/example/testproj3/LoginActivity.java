@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     Button login;
     TextView register;
     private FirebaseAuth authProfile;
+    RadioButton doctorHome, patientHome;
 
 
     @SuppressLint("MissingInflatedId")
@@ -36,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.editPassword);
         login = findViewById(R.id.editLogin);
         register = findViewById(R.id.editRegister);
+        doctorHome = findViewById(R.id.doctorRadioButton);
+        patientHome = findViewById(R.id.patientRadioButton);
 
         authProfile = FirebaseAuth.getInstance();
         login.setOnClickListener(new View.OnClickListener() {
@@ -49,8 +53,10 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Please enter  email", Toast.LENGTH_SHORT).show();
                 }else if(TextUtils.isEmpty(Password)){
                     Toast.makeText(LoginActivity.this, "Please enter your password", Toast.LENGTH_SHORT).show();
-                }else{
-                    loginUser(UserName,Password);
+                }else if(patientHome.isChecked()){
+                    loginUserPatient(UserName,Password);
+                }else if(doctorHome.isChecked()){
+                    loginUserDoctor(UserName,Password);
                 }
             }
         });
@@ -62,18 +68,33 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loginUser(String userName, String password) {
+    private void loginUserPatient(String userName, String password) {
             authProfile.signInWithEmailAndPassword(userName, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             Toast.makeText(LoginActivity.this, "You are logged in now", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                            startActivity(new Intent(LoginActivity.this, PatientHomeActivity.class));
                         }else{
                             Toast.makeText(LoginActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                 }
             });
+
+    }
+
+    private void loginUserDoctor(String userName, String password) {
+        authProfile.signInWithEmailAndPassword(userName, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(LoginActivity.this, "You are logged in now", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LoginActivity.this, DoctorHomeActivity.class));
+                }else{
+                    Toast.makeText(LoginActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
 
