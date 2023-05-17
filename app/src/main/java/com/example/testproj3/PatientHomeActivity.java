@@ -23,7 +23,7 @@ public class PatientHomeActivity extends AppCompatActivity {
         myDoctorsPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(PatientHomeActivity.this, MyPatientsActivity.class));
+                startActivity(new Intent(PatientHomeActivity.this, MyDoctorsActivity.class));
             }
         });
 
