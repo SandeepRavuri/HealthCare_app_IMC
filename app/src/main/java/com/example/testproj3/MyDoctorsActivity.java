@@ -32,7 +32,7 @@ public class MyDoctorsActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.userListDoctor);
         PlumbersList = new ArrayList<>();
-        mno = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testproj3-12495-default-rtdb.firebaseio.com/").child("Registered Doctors");
+        mno = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testproj4-da3d6-default-rtdb.firebaseio.com").child("Registered Doctors");
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -48,13 +48,8 @@ public class MyDoctorsActivity extends AppCompatActivity {
                 }
                 myDoctorAdapter.notifyDataSetChanged();
             }
-
-
-
             @Override
-
             public void onCancelled(DatabaseError firebaseError) {
-
             }
         });
     }

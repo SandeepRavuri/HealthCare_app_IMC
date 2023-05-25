@@ -33,7 +33,7 @@ public class MyPatientsActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.userList);
         PlumbersList = new ArrayList<>();
-        mno = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testproj3-12495-default-rtdb.firebaseio.com/").child("Registered Patients");
+        mno = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testproj4-da3d6-default-rtdb.firebaseio.com").child("Registered Patients");
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

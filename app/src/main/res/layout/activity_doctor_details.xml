@@ -53,4 +53,10 @@
         android:textAppearance="?android:textAppearanceMedium"
         android:padding="16dp" />
 
+    <Button
+        android:id="@+id/buttonAppointment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Book an Appointment" />
+
 </LinearLayout>

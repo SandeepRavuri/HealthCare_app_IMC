@@ -2,7 +2,10 @@ package com.example.testproj3;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class DoctorDetailsActivity extends AppCompatActivity {
@@ -15,6 +18,8 @@ public class DoctorDetailsActivity extends AppCompatActivity {
     private TextView textViewAddress;
     private TextView textViewSpeciality;
 
+    private Button  buttonBookAppointment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +27,7 @@ public class DoctorDetailsActivity extends AppCompatActivity {
 
         // Get the Doctor object from the intent
         Doctor doctor = getIntent().getParcelableExtra("doctor");
+        Patient patient = getIntent().getParcelableExtra("patient");
 
         // Initialize TextViews
         textViewFullName = findViewById(R.id.textViewFullName);
@@ -40,5 +46,18 @@ public class DoctorDetailsActivity extends AppCompatActivity {
         textViewCity.setText(doctor.getCity());
         textViewAddress.setText(doctor.getAddress());
         textViewSpeciality.setText(doctor.getSpeciality());
+
+        // Initialize the "Book Appointment" button
+        buttonBookAppointment = findViewById(R.id.buttonAppointment);
+        buttonBookAppointment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Start the booking appointment activity
+                Intent intent = new Intent(DoctorDetailsActivity.this, BookAppointmentActivity.class);
+                intent.putExtra("doctor", doctor);
+                intent.putExtra("patient", patient);
+                startActivity(intent);
+            }
+        });
     }
 }
